@@ -6,6 +6,7 @@ import Escrow from './Escrow';
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 
 export async function approve(escrowContract, signer) {
+  console.log(await signer.getAddress());
   const approveTxn = await escrowContract.connect(signer).approve();
   await approveTxn.wait();
 }
@@ -29,15 +30,15 @@ function App() {
   async function newContract() {
     const beneficiary = document.getElementById('beneficiary').value;
     const arbiter = document.getElementById('arbiter').value;
-    const value = ethers.BigNumber.from(document.getElementById('wei').value);
+    const value = ethers.utils.parseEther(document.getElementById('wei').value);
     const escrowContract = await deploy(signer, arbiter, beneficiary, value);
-
+    console.log(await escrowContract)
 
     const escrow = {
       address: escrowContract.address,
       arbiter,
       beneficiary,
-      value: value.toString(),
+      value: ethers.utils.formatEther(value),
       handleApprove: async () => {
         escrowContract.on('Approved', () => {
           document.getElementById(escrowContract.address).className =
@@ -45,7 +46,6 @@ function App() {
           document.getElementById(escrowContract.address).innerText =
             "✓ It's been approved!";
         });
-
         await approve(escrowContract, signer);
       },
     };
@@ -68,7 +68,7 @@ function App() {
         </label>
 
         <label>
-          Deposit Amount (in Wei)
+          Deposit Amount (in ETH)
           <input type="text" id="wei" />
         </label>
 
