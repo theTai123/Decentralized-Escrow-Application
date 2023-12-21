@@ -2,6 +2,7 @@ import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import deploy from './deploy';
 import Escrow from './Escrow';
+import escrow from './artifacts/contracts/Escrow.sol/Escrow';
 
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 
@@ -27,30 +28,44 @@ function App() {
     getAccounts();
   }, [account]);
 
+  useEffect(()=>{
+    async function getContracts(){
+      const res = await fetch('http://localhost:8000/escrows')
+      const contract = await res.json();
+      const fullContract = contract.map((contract)=> {
+        const escrowContract = new ethers.Contract(contract.address,escrow.abi,provider);
+        return {
+          ...contract,
+          escrowContract
+        }
+      })
+      console.log(fullContract);
+      if(fullContract.length) setEscrows(fullContract);
+    }
+    getContracts();
+  },[]);
+
   async function newContract() {
     const beneficiary = document.getElementById('beneficiary').value;
     const arbiter = document.getElementById('arbiter').value;
-    const value = ethers.utils.parseEther(document.getElementById('wei').value);
+    const value = ethers.utils.parseEther(document.getElementById('eth').value);
     const escrowContract = await deploy(signer, arbiter, beneficiary, value);
-    console.log(await escrowContract)
 
     const escrow = {
       address: escrowContract.address,
       arbiter,
       beneficiary,
       value: ethers.utils.formatEther(value),
-      handleApprove: async () => {
-        escrowContract.on('Approved', () => {
-          document.getElementById(escrowContract.address).className =
-            'complete';
-          document.getElementById(escrowContract.address).innerText =
-            "✓ It's been approved!";
-        });
-        await approve(escrowContract, signer);
-      },
     };
+    
+    console.log(escrow);
+    await fetch('http://localhost:8000/escrows', {
+      method: 'POST',
+      body: JSON.stringify(escrow),
+      headers: { 'Content-Type': 'application/json' }
+    });
 
-    setEscrows([...escrows, escrow]);
+    window.location.replace('/');
   }
 
   return (
@@ -69,7 +84,7 @@ function App() {
 
         <label>
           Deposit Amount (in ETH)
-          <input type="text" id="wei" />
+          <input type="text" id="eth" />
         </label>
 
         <div
@@ -89,8 +104,8 @@ function App() {
         <h1> Existing Contracts </h1>
 
         <div id="container">
-          {escrows.map((escrow) => {
-            return <Escrow key={escrow.address} {...escrow} />;
+          {escrows && escrows.map((escrow) => {
+            return <Escrow key={escrow.address} {...escrow}/>;
           })}
         </div>
       </div>

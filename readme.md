@@ -24,3 +24,16 @@ Compile the contracts using `npx hardhat compile`. The artifacts will be placed 
 
 To run the front-end application run `npm start` from the `/app` directory. Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
+## Back-End
+
+Clear all data in your `db.json` if you want.
+
+```json
+{
+  "escrows": [
+    
+  ]
+}
+```
+
+To run the back-end, run `json-server --watch db.json --port 8000`. Open [http://localhost:8000/escrows](http://localhost:8000/escrows) to view your contracts data.
