@@ -8,8 +8,13 @@ const provider = new ethers.providers.Web3Provider(window.ethereum);
 
 export async function approve(escrowContract, signer) {
   console.log(await signer.getAddress());
-  const approveTxn = await escrowContract.connect(signer).approve();
-  await approveTxn.wait();
+  try {
+    const approveTxn = await escrowContract.connect(signer).approve();
+    await approveTxn.wait();
+  }
+  catch(err) {
+    console.log(err);
+  }
 }
 
 function App() {

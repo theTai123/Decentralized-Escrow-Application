@@ -32,9 +32,6 @@ export default function Escrow({
       const Approve = await escrowContract.isApproved();
       if(Approve) isApprove();
     }
-    escrowContract.on('Approved', (balance) => {
-      isApprove();
-    });
     getData();
   },[])
 
@@ -46,6 +43,9 @@ export default function Escrow({
   }
 
   const handleApprove = async ()=>{
+    escrowContract.on('Approved', () => {
+      isApprove();
+    });
     await approve(escrowContract,signer)
   }
 
