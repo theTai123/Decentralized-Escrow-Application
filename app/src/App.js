@@ -52,13 +52,15 @@ function App() {
 
   async function newContract() {
     const beneficiary = document.getElementById('beneficiary').value;
-    const arbiter = document.getElementById('arbiter').value;
+    const arbiter1 = document.getElementById('arbiter1').value;
+    const arbiter2 = document.getElementById('arbiter2').value;
     const value = ethers.utils.parseEther(document.getElementById('eth').value);
-    const escrowContract = await deploy(signer, arbiter, beneficiary, value);
+    const escrowContract = await deploy(signer, arbiter1 , arbiter2 , beneficiary, value);
 
     const escrow = {
       address: escrowContract.address,
-      arbiter,
+      arbiter1,
+      arbiter2,
       beneficiary,
       value: ethers.utils.formatEther(value),
     };
@@ -75,45 +77,52 @@ function App() {
 
   return (
     <>
-      <div className="contract">
-        <h1> New Contract </h1>
-        <label>
-          Arbiter Address
-          <input type="text" id="arbiter" />
-        </label>
+      <div className='table'>
+        <div className="contract">
+          <h1> New Contract </h1>
+          <label>
+            Arbiter 1 Address
+            <input type="text" id="arbiter1" />
+          </label>
 
-        <label>
-          Beneficiary Address
-          <input type="text" id="beneficiary" />
-        </label>
+          <label>
+            Arbiter 2 Address 
+            <input type="text" id="arbiter2" />
+          </label>
 
-        <label>
-          Deposit Amount (in ETH)
-          <input type="text" id="eth" />
-        </label>
+          <label>
+            Beneficiary Address
+            <input type="text" id="beneficiary" />
+          </label>
 
-        <div
-          className="button"
-          id="deploy"
-          onClick={(e) => {
-            e.preventDefault();
+          <label>
+            Deposit Amount (in ETH)
+            <input type="text" id="eth" />
+          </label>
 
-            newContract();
-          }}
-        >
-          Deploy
+          <div
+            className="button"
+            id="deploy"
+            onClick={(e) => {
+              e.preventDefault();
+
+              newContract();
+            }}
+          >
+            Deploy
+          </div>
         </div>
-      </div>
 
-      <div className="existing-contracts">
-        <h1> Existing Contracts </h1>
+        <div className="existing-contracts">
+          <h1> Existing Contracts </h1>
 
-        <div id="container">
-          {escrows && escrows.map((escrow) => {
-            return <Escrow key={escrow.address} {...escrow}/>;
-          })}
+          <div id="container">
+            {escrows && escrows.map((escrow) => {
+              return <Escrow key={escrow.address} {...escrow}/>;
+            })}
+          </div>
         </div>
-      </div>
+      </div> 
     </>
   );
 }

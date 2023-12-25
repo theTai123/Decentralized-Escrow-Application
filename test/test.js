@@ -5,15 +5,18 @@ describe('Escrow', function () {
   let contract;
   let depositor;
   let beneficiary;
-  let arbiter;
-  const deposit = ethers.utils.parseEther('1');
+  let arbiter1;
+  let arbiter2;
+  const deposit = ethers.parseEther('1');
   beforeEach(async () => {
     depositor = ethers.provider.getSigner(0);
     beneficiary = ethers.provider.getSigner(1);
-    arbiter = ethers.provider.getSigner(2);
+    arbiter1 = ethers.provider.getSigner(2);
+    arbiter2 = ethers.provider.getSigner(3);
     const Escrow = await ethers.getContractFactory('Escrow');
     contract = await Escrow.deploy(
-      arbiter.getAddress(),
+      arbiter1.getAddress(),
+      arbiter2.getAddress(),
       beneficiary.getAddress(),
       {
         value: deposit,
@@ -36,8 +39,10 @@ describe('Escrow', function () {
   describe('after approval from the arbiter', () => {
     it('should transfer balance to beneficiary', async () => {
       const before = await ethers.provider.getBalance(beneficiary.getAddress());
-      const approveTxn = await contract.connect(arbiter).approve();
-      await approveTxn.wait();
+      const approveTxn1 = await contract.connect(arbiter1).approve();
+      const approveTxn2 = await contract.connect(arbiter2).approve();
+      await approveTxn1.wait();
+      await approveTxn2.wait();
       const after = await ethers.provider.getBalance(beneficiary.getAddress());
       expect(after.sub(before)).to.eq(deposit);
     });
