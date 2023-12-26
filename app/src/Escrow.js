@@ -33,10 +33,12 @@ export default function Escrow({
   useEffect( ()=>{
     const getData = async () => {
       const Approve = await escrowContract.isApproved();
+      const Count = await escrowContract.approveCount();
       if(Approve){
         isApprove();
         setApproved(true);
       } 
+      setApproveCount(Number(Count));
     }
     getData();
   },[])

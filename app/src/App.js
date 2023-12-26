@@ -13,7 +13,9 @@ export async function approve(escrowContract, signer) {
     await approveTxn.wait();
   }
   catch(err) {
-    console.log(err);
+    const error = JSON.parse(JSON.stringify(err));
+    console.log(error);
+    alert(error.reason);
   }
 }
 
@@ -80,37 +82,39 @@ function App() {
       <div className='table'>
         <div className="contract">
           <h1> New Contract </h1>
-          <label>
-            Arbiter 1 Address
-            <input type="text" id="arbiter1" />
-          </label>
+          <form 
+          onSubmit={(e) => {
+            e.preventDefault();
 
-          <label>
-            Arbiter 2 Address 
-            <input type="text" id="arbiter2" />
-          </label>
-
-          <label>
-            Beneficiary Address
-            <input type="text" id="beneficiary" />
-          </label>
-
-          <label>
-            Deposit Amount (in ETH)
-            <input type="text" id="eth" />
-          </label>
-
-          <div
-            className="button"
-            id="deploy"
-            onClick={(e) => {
-              e.preventDefault();
-
-              newContract();
+            newContract();
             }}
           >
-            Deploy
-          </div>
+            <label>
+              Arbiter 1 Address
+              <input type="text" id="arbiter1" required />
+            </label>
+
+            <label>
+              Arbiter 2 Address 
+              <input type="text" id="arbiter2" required />
+            </label>
+
+            <label>
+              Beneficiary Address
+              <input type="text" id="beneficiary" required />
+            </label>
+
+            <label>
+              Deposit Amount (in ETH)
+              <input type="text" id="eth" required />
+            </label>
+
+            <input type='submit' 
+            className="button"
+            id="deploy"
+            value="Deploy"
+            />
+          </form>
         </div>
 
         <div className="existing-contracts">
