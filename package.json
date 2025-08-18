@@ -21,6 +21,7 @@
   ],
   "dependencies": {
     "ethers": "^6.9.1",
+    "json-server": "^1.0.0-beta.3",
     "react": "^18.2.0"
   }
 }
